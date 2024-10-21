@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { ErrorPage } from "./components/error";
 import { Footer } from "./components/footer";
 import { Header } from "./components/header";
-import { Legend } from "./components/legend";
+import { Legend, type LegendType } from "./components/legend";
 import { Loading } from "./components/loading";
 import { Rank, type RankInterface } from "./components/rank";
 
@@ -16,7 +16,7 @@ function App() {
     if (error)
         return (
             <>
-                <div className="grid h-[97vh] grid-rows-fit">
+                <div className="grid h-screen grid-rows-fit">
                     <Header />
                     <main className="flex items-center justify-center">
                         <ErrorPage />
@@ -28,7 +28,7 @@ function App() {
     if (isLoading)
         return (
             <>
-                <div className="grid h-[97vh] grid-rows-fit">
+                <div className="grid h-screen grid-rows-fit">
                     <Header />
                     <main className="flex items-center justify-center">
                         <Loading />
@@ -40,34 +40,47 @@ function App() {
 
     const { Global, ...legends } = data.legends.all;
     const rank: RankInterface = {
-        level: data.global.level,
         rankImg: data.global.rank.rankImg,
         rankName: data.global.rank.rankName,
-        total: data.total.kills.value,
     };
     const legendsName = Object.keys(legends);
     const legendsData = [];
     for (const name of legendsName) {
-        legendsData.push({
-            legendName: name,
-            total: legends[name].data.map(
-                (l: { name: string; value: string | number }) => {
-                    if (l.name === "BR Kills") return l.value;
-                },
-            ),
-            legendImg: legends[name].ImgAssets.icon,
-        });
+        const kills = legends[name].data.find(
+            (l: { key: string }) => l.key === "kills",
+        );
+        const damage = legends[name].data.find(
+            (l: { key: string }) => l.key === "damage",
+        );
+        const play = legends[name].data.find(
+            (l: { key: string }) => l.key === "games_played",
+        );
+        const legend: LegendType = {
+            front: {
+                legendName: name,
+                legendImg: legends[name].ImgAssets.icon,
+            },
+            back: {
+                kills: kills?.value,
+                damage: damage?.value,
+                play: play?.value,
+            },
+        };
+        legendsData.push(legend);
     }
-
     return (
         <>
-            <div className="grid h-[97vh] grid-rows-fit">
+            <div className="grid h-screen grid-rows-fit">
                 <Header>
                     <Rank {...rank} />
                 </Header>
                 <main className="mx-auto my-3 grid w-11/12 grid-cols-fill gap-x-3 gap-y-4">
                     {legendsData.map((l) => (
-                        <Legend {...l} key={l.legendName} />
+                        <Legend
+                            front={{ ...l.front }}
+                            back={{ ...l.back }}
+                            key={l.front.legendName}
+                        />
                     ))}
                 </main>
                 <Footer />

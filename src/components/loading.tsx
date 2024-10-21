@@ -13,7 +13,7 @@ export const Loading = () => {
                     // biome-ignore lint/style/useNumberNamespace:
                     repeat: Infinity,
                 }}
-                className="absolute top-0 size-32 border-4 border-orange-600"
+                className="absolute top-0 size-24 border-4 border-orange-600"
             />
             <motion.div
                 initial={{ rotate: 45 }}
@@ -26,7 +26,7 @@ export const Loading = () => {
                     // biome-ignore lint/style/useNumberNamespace:
                     repeat: Infinity,
                 }}
-                className="size-32 border-4 border-teal-400"
+                className="size-24 border-4 border-teal-400"
             />
         </div>
     );
